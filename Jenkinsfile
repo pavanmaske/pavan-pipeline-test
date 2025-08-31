@@ -1,74 +1,31 @@
 pipeline {
-
     agent any
-
-
-
     environment {
-
         MAVEN_HOME = '/usr/share/maven' // Path to Maven installation
-
-
     }
-
-
-
     stages {
-
-        stage('Checkout Code') { // Clones the repository
-
+        stage('Checkout Code') {
             steps {
-
-                git 'https://github.com/pavanmaske/pavan-pipeline-test.git'
-
+                git branch: 'master', url: 'https://github.com/pavanmaske/pavan-pipeline-test.git'
             }
-
         }
-
-
-
-        stage('Build with Maven') { // Builds the project and creates JAR/WAR
-
+        stage('Build with Maven') {
             steps {
-
-                sh 'mvn clean package'
-
+                sh "${MAVEN_HOME}/bin/mvn clean package"
             }
-
         }
-
-
-
-        stage('Run Unit Tests') { // Executes unit tests
-
+        stage('Run Unit Tests') {
             steps {
-
-                sh 'mvn test'
-
+                sh "${MAVEN_HOME}/bin/mvn test"
             }
-
         }
-
-      
-
     }
-
-
-
     post {
-
         success {
-
             echo 'Build and deployment successful!'
-
         }
-
         failure {
-
             echo 'Build failed!'
-
         }
-
     }
-
 }
