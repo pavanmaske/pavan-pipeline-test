@@ -19,7 +19,7 @@ pipeline {
 
             steps {
 
-                git 'https://github.com/007AnupamSharma/hello-world.git'
+                git 'https://github.com/pavanmaske/pavan-pipeline-test.git'
 
             }
 
