@@ -1,33 +1,96 @@
 pipeline {
+
     agent any
+
+
+
     environment {
+
         MAVEN_HOME = '/usr/share/maven' // Path to Maven installation
+        SONARQUBE_SERVER = 'pavan-sonarcube-server'
+        // Scanner tool name (must match Jenkins Global Tools configuration)
+        SCANNER_NAME = 'pavan-sonarqube-01'
+        // Credential ID in Jenkins for SonarQube token
+        SONAR_TOKEN_CREDENTIAL_ID = 'token-1-jen'
+        // Your actual SonarQube server URL
+        SONAR_HOST_URL = 'http://3.27.151.84:9000'
+
     }
+
+
+
     stages {
-        stage('Checkout Code') {
+
+        stage('Checkout Code') { // Clones the repository
+
             steps {
-                git branch: 'master', url: 'https://github.com/pavanmaske/pavan-pipeline-test.git'
+
+                git 'https://github.com/pavanmaske/pavan-pipeline-test.git'
+
+            }
+
+        }
+
+
+
+        stage('Build with Maven') { // Builds the project and creates JAR/WAR
+
+            steps {
+
+                sh 'mvn clean package'
+
+            }
+
+        }
+
+
+
+        stage('Run Unit Tests') { // Executes unit tests
+
+            steps {
+
+                sh 'mvn test'
+
+            }
+
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(env.SONARQUBE_SERVER) {
+                    script {
+                        def scannerHome = tool(env.SCANNER_NAME)
+
+                        sh """
+                          ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=scmgalaxy1 \
+                            -Dsonar.sources=server/src \
+                            -Dsonar.host.url=${env.SONAR_HOST_URL} \
+                            -Dsonar.login=${env.SONAR_TOKEN}
+                        """
+                    }
+                }
             }
         }
-        stage('Build and SonarQube') {
-            steps {
-                sh "${MAVEN_HOME}/bin/mvn clean verify sonar:sonar -Dsonar.host.url=http://http://13.239.237.99:9000/ -Dsonar.login=sqa_4a48cb83280e404c0ee46355bde6085fbc8ebfa4"
-            }
-        }
-        stage('Run Unit Tests') {
-            steps {
-                // Optional: You can remove this if tests are also included in the previous mvn command
-                // or keep it separately if needed
-                sh "${MAVEN_HOME}/bin/mvn test"
-            }
-        }
+
     }
+
+
+
     post {
+
         success {
-            echo 'Build and analysis successful!'
+
+            echo 'Build and deployment successful!'
+
         }
+
         failure {
+
             echo 'Build failed!'
+
         }
+
     }
+
 }
