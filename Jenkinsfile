@@ -11,7 +11,7 @@ pipeline {
         // Scanner tool name (must match Jenkins Global Tools configuration)
         SCANNER_NAME = 'pavan-sonarqube-01'
         // Credential ID in Jenkins for SonarQube token
-        SONAR_TOKEN_CREDENTIAL_ID = 'token-1-jen'
+        SONAR_TOKEN_CREDENTIAL_ID = 'token-1'
         // Your actual SonarQube server URL
         SONAR_HOST_URL = 'http://3.27.151.84:9000'
 
